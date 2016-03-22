@@ -1,4 +1,11 @@
 \chapter{Einleitung}
-	\section{Problemstellung}
-	\section{Eiswasserspeicher}
-	\section{Lösung}
+Nachhaltigkeit spielt in der heutigen Zeit eine wichtige Rolle. Neben einer Reduktion des Stromverbrauchs in privaten Haushalten, interessieren sich auch Firmen für eine Möglichkeit regenerative Energien zu nutzen. In dieser Arbeit soll für einen Landwirtschaftsbetrieb, der sich auf die Milchproduktion spezialisiert hat, ein Simulator erstellt werden. Dieser Simulator soll feststellen, ob die Verwendung eines Eiswasserspeichers in Kombination von einer Photovoltaik (PV) Anlage sinnvoll ist.
+
+\section{Problemstellung}
+Während der Produktion muss die Milch von 35 auf 4 Grad Celsius abgekühlt werden. Diese Kühlmaßnahme benötigt viel Energie (304342,5 kJ bei 2500 Liter Milch). Ein Simulator eines Eiswasserspeichers soll ermitteln, ob eine Abflachung der Lastspitzen durch eine Vorkühlung möglich ist. Die Vorkühlung soll die Milch von 35 auf 17 Grad Celsius runterkühlen. 
+
+\section{Eiswasserspeicher}
+Der Eiswasserspeicher kann 164 kg Eis speichern. Er verfügt weiterhin über einen Kompressor der Marke Maneurop MT-22 mit 3,51 kW Leistung. Der Kompressor ist für die Erzeugung des Eises verantwortlich. Weiterhin befindet sich im Speicher die horzontale Kreiselpumpe CEA 70/3/A-V der Firma LOWARA. Die Ladezeit für eine komplette Beladung mit Eis wird mit sechs Stunden angegeben.
+
+\section{Lösung}
+Für die Realisierung des Simulators wurde ein Raspberry PI zur Verfügung gestellt. Dieser soll softwareseitig alle 15 Minuten einen Simulationsschritt durchführen. In einem Schritt wird festgestellt, ob der Speicher beladen oder entladen wird. Während den Schritten wird die benötigte Leistung anhand einer S0-Schnittstelle übertragen. Die Leistung für den Ent- und Beladevorgang wurden vorgegeben.5
