@@ -1,6 +1,74 @@
 \chapter{Software}
-	\section{Modell}
-	\section{Simulator}
-		\subsection{Eiswasserspeicher}
-		\subsection{Steuer-Server}
-	\section{Steuer-Client}
+
+\section{Modell}
+
+Wenn ein Eiswasserspeicher zum Vorkühlen von Milch eingesetzt werden soll, laufen dabei komplexe physikalische Vorgänge ab, die nur schwer mathematisch zu beschreiben sind. Deshalb war als Grundlage für den Simulator ein physikalisches Modell gegeben, das diesen Prozess näherungsweise abbildet. Dieses soll im Folgenden erläutert werden. % TODO Weiterschreiben
+
+\subsection{Laden}
+
+\subsection{Kühlen}
+
+\section{Simulator}
+\label{software_simulator}
+
+Um das physikalische Modell wie im vorherigen Abschnitt beschrieben abzubilden, wurde im Rahmen dieses Projektes eine komplexe C++-Applikation entwickelt. Diese läuft zeitdiskret ab, ist konfigurierbar und bietet verschiedene Schnittstellen nach außen an. Sie lässt sich in verschiedene logische Einheiten unterteilen, welche in den nachfolgenden Teilabschnitten genauer betrachtet werden sollen. % TODO Weiterschreiben
+
+\subsection{Eiswasserspeicher}
+
+Der Eiswasserspeicher ist die zentrale Einheit im Simulator. Er setzt das komplette mathematische Modell um. % TODO Weiterschreiben
+
+\subsection{Steuer-Server}
+Der Simulator soll wie in Abschnitt \ref{software_simulator} erläutert lediglich den Teil des Eiswasserspeichers übernehmen. Das heißt, dass es eine Schnittstelle  % TODO Weiterschreiben
+
+\subsection{Konfiguration des Simulators}
+
+Die Konfigurationsmöglichkeiten sind in Tabelle \ref{tab:simulatorconfig} aufgelistet, dabei sind sämtliche Zahlenwerte sind als \emph{Integer} anzugeben. % TODO Weiterschreiben
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{.3\textwidth}|p{.25\textwidth}|X|}
+\hline
+\textbf{Schlüssel} & \textbf{Mögliche Werte} & \textbf{Beschreibung} \\ \hline
+controlserver.port & 1024 < port < 65535 & Port des Steuer-Servers \\ \hline
+controlserver.secret.token & beliebig & Geheimer Schlüssel \\ \hline
+milk.temp.target & > 0 & Zieltemperatur der Milch \\ \hline
+milk.temp.input & > 0 & Eingangstemperatur der Milch \\ \hline
+simulator.time.step & > 0 & Zeitschritt in Minuten \\ \hline
+simulator.log.level & >= 10 für \emph{ERROR} & Log-Level des Simulators \\
+ & >= 20 für \emph{WARN} & \\ 
+ & >= 30 für \emph{INFO} & \\
+ & >= 40 für \emph{DEBUG} & \\ 
+ & >= 50 für \emph{TRACE} & \\ \hline
+simulator.debug & true/false & Falls true, wird der Zeitschritt \\
+ & & auf 10 Sekunden abgesenkt \\ \hline
+snull.pin & S. Abschnitt \ref{gpio} & Pin für den Ausgang zur S0-Schnittstelle \\ \hline
+snull.watt.per.pulse & > 0 & Anzahl der Pulse pro Watt \\ \hline
+snull.watt.per.load & > 0 & Leistung beim Laden \\ \hline
+snull.watt.per.cool & > 0 & Leistung beim Kühlen \\ \hline
+reservoir.capacity & > 0 & Kapazität des Speichers \\ \hline
+reservoir.loadingtime & > 0 & Ladezeit in Stunden \\ \hline
+reservoir.pumps.flow & > 0 & Volumenstrom der Pumpen in l/min \\ \hline
+\end{tabularx}
+\caption{Konfiguration des Simulators}
+\label{tab:simulatorconfig}
+\end{table}
+
+\section{Steuer-Client}
+Um den im vorherigen Abschnitt vorgestellten Steuer-Server einfach und sicher bedienen zu können, wurde im Rahmen dieses Projektes der \emph{Steuer-Client} entwickelt. Dies ist eine einfache C++-Applikation, die unabhängig vom Simulator gestartet und bedient werden kann. Dabei ist es möglich, dass Simulator und Steuer-Client auf physisch getrennten Maschinen laufen, da diese über TCP/IP miteinander kommunizieren. Dies wird bereits durch den Raspberry PI und das darauf laufende Betriebssystem sichergestellt (siehe Kapitel \ref{raspi}). % TODO Weiterschreiben
+
+\subsection{Konfiguration des Steuer-Clients}
+Auch der Steuer-Client ist über eine mitgelieferte INI-Datei konfigurierbar. Hierzu wird ebenfalls die \emph{Boost program\_options} verwendet. % TODO Weiterschreiben
+Tabelle \ref{tab:clientconfig} zeigt die Konfigurationsmöglichkeiten des Steuer-Clients.
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{|p{.3\textwidth}|p{.25\textwidth}|X|}
+\hline
+\textbf{Schlüssel} & \textbf{Mögliche Werte} & \textbf{Beschreibung} \\ \hline
+server.host & beliebig & Hostname bzw. IP des Rechners, auf dem der Simulator läuft \\ \hline
+server.port & 1024 < port < 65535 & Port des Rechners, auf dem der Simulator läuft \\ \hline
+server.secret.token & beliebig & Geheimer Schlüssel des Servers \\ \hline
+\end{tabularx}
+\caption{Konfiguration des Steuer-Clients}
+\label{tab:clientconfig}
+\end{table}
