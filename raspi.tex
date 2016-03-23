@@ -1,9 +1,9 @@
 \chapter{Raspberry PI}\label{raspi}
-Mit dem Raspberry PI bietet die Raspberry PI Foundation einen Einplatinencomputer, der für Experimente und Entwicklung von Programmen geeignet ist. Sein günstiger Preis von weniger als 40 Dollar und die Größe einer Kreditkarte tragen zu seinem Erfolg bei. Weiterhin existieren verschiedene Varianten des Computers, welche sich hauptsächlich in der Rechenleistung unterscheiden. Ursprünglich sollte der Raspberry PI zum Experimentieren von Studenten verwendet werden, fand jedoch schnell Anklag in divseren anderen Bereichen außerhalb von Universitäten, u.a. der Automatisierung von Abläufen.\\ %https://www.raspberrypi.org/about/
-Für diese Arbeit wurde ein Raspberry PI 2 vorgeschrieben, da er eine kostengünstige Alternative darstellt, um hardwarenahe Software zu verwirklichen. Hierbei spielen besonders die General Purpose Input/Output Pins eine wichtige Rolle. Weiterhin verfügt der Raspberry PI über eine Ethernet Schnittstelle, welche zur Kommunikation dient. Da es sich um einen Einplatinencomputer und nicht um einen klassischen Mikrocontroller handelt, findet sich auf dem Raspberry PI ein Betriebssystems wieder, welches eine Erleichterung für die Softwareentwicklung darstellt. Hierzu zählt insbesondere die Umsetzung des TCPI/IP Stacks.\\ % Quellen?
+Mit dem Raspberry PI bietet die Raspberry PI Foundation einen Einplatinencomputer, der für Experimente und die Entwicklung von Programmen geeignet ist. Sein günstiger Preis von weniger als 40 Dollar und die Größe einer Kreditkarte tragen zu seinem Erfolg bei. Weiterhin existieren verschiedene Varianten des Computers, welche sich hauptsächlich in der Rechenleistung unterscheiden. Ursprünglich sollte der Raspberry PI zum Experimentieren von Studenten verwendet werden, fand jedoch schnell Anklag in divseren anderen Bereichen außerhalb von Universitäten, unter anderem der Automatisierung von Abläufen \cite{raspiabout}.\\
+Für diese Arbeit wurde ein Raspberry PI 2 vorgeschlagen, da er eine kostengünstige Alternative darstellt, um hardwarenahe Software zu verwirklichen. Hierbei spielen besonders die General Purpose Input/Output Pins eine wichtige Rolle. Weiterhin verfügt der Raspberry PI über eine Ethernet Schnittstelle, welche zur Kommunikation dient. Da es sich um einen Einplatinencomputer und nicht um einen klassischen Mikrocontroller handelt, findet sich auf dem Raspberry PI ein Betriebssystems wieder, welches eine Erleichterung für die Softwareentwicklung darstellt. Hierzu zählt insbesondere die Umsetzung des TCP/IP Stacks.
 
 \section{Betriebssystem}\label{os}
-Die Betriebssysteme für den Raspberry PI sind zahlreich. Am häufigsten ist jedoch eine Linux-Distribution anzutreffen. In diesem Projekt kommt Raspbian zum Einsatz, ein auf Debian angepasstes Betriebssystem. Die Installation von Raspbian findet mit dem NOOBS-Installer, ein von der Raspberry PI Foundation bereitgestellter Installationsassistent, statt. % https://www.raspberrypi.org/help/noobs-setup/
+Die Betriebssysteme für den Raspberry PI sind zahlreich. Am häufigsten ist jedoch eine Linux-Distribution anzutreffen. In diesem Projekt kommt Raspbian zum Einsatz, ein auf Debian angepasstes Betriebssystem. Die Installation von Raspbian findet mit dem NOOBS-Installer, ein von der Raspberry PI Foundation bereitgestellter Installationsassistent, statt \cite{raspinoobs}. 
 Das Betriebssystem vereinfacht die Softwareentwicklung dahingehend, dass es verschiedene Schnittstellen für den Zugriff auf die Hardware anbietet. Die für dieses Projekt am wichtigsten Schnittstellen sind einerseits die GPIO Pins und andererseits der Zugriff auf das Netzwerk.
 
 \section{GPIO}\label{gpio}
@@ -15,17 +15,18 @@ Von den insgesamt 40 Pins sind 26 GPIO Pins. Bei den anderen handelt es sich Pin
 	\label{gpio-pins}
 \end{figure}
 \noindent
-Damit die GPIO Pins in einem C/C++ Programm angesprochen werden können, wird die Bibliothek \textit{WiringPi} verwendet. %http://wiringpi.com
+Damit die GPIO Pins in einem C/C++ Programm angesprochen werden können, wird die Bibliothek \textit{Wiring Pi}\footnote{http://wiringpi.com} verwendet \cite{wiringpi}.
 Die Nummerierung der GPIO Pins unterschiedet sich zu der ursprünglichen Anordnung und ist aus Abbildung \ref{wiringpi} ersichtlich.
  \begin{figure}[H]
  	\centering
  	\includegraphics[width=0.7\textwidth]{bilder/wiringpi.png}
- 	\caption{WiringPi Pinanordnung}
+ 	\caption{Wiring Pi Pinanordnung}
  	\label{wiringpi}
  \end{figure}
 \noindent
-Listing \ref{wiringpi-example} zeigt ein einfaches Programm, welches \textit{WiringPi} verwendet. Zeile vier zeigt eine Initialiserungsprozedur, welche einmalig aufgerufen werden muss, um auf die GPIO Pins zuzugreifen. Anschließend wird in Zeile fünf angegeben, ob auf dem Pin null lesend oder schreibend zugegriffen wird. Anschließend wird in einer Endlosschleife abwechselnd der Pin auf \textit{HIGH} oder \textit{LOW} gesetzt, jeweils mit einer Pause von 500 Millisekunden.
-\begin{lstlisting}[frame=single, basicstyle=\tiny, caption=WiringPi Beispiel, label=wiringpi-example]
+Listing \ref{wiringpi-example} zeigt ein einfaches Programm, welches \textit{Wiring Pi} verwendet. Zeile vier zeigt eine Initialiserungsprozedur, welche einmalig aufgerufen werden muss, um auf die GPIO Pins zuzugreifen. Anschließend wird in Zeile fünf angegeben, ob auf dem Pin 0 lesend oder schreibend zugegriffen wird. Anschließend wird in einer Endlosschleife abwechselnd der Pin auf \textit{HIGH} oder \textit{LOW} gesetzt, jeweils mit einer Pause von 500 Millisekunden.
+\pagebreak
+\begin{lstlisting}[frame=single, caption=WiringPi Beispiel, label=wiringpi-example]
 	#include <wiringPi.h>
 	int main (void)
 	{
@@ -40,5 +41,5 @@ Listing \ref{wiringpi-example} zeigt ein einfaches Programm, welches \textit{Wir
 	}
 \end{lstlisting}
 \section{Boost}
-Die C++ Bibliothek \textit{boost} bietet diverse Funktionalitäten für die Entwicklung an. In diesem Projekt wird \textit{boost} dazu verwendet, um auf das Netzwerk zuzugreifen und um Nebenläufigkeit zu ermöglichen. Die Netzwerkfunktionalitäten werden für eine Client-Server Architektur verwendet, um den Simulator zu steuern. Der Client sendet Kommandos, um die Simulation zu beeinflussen. Dadurch lässt sich einstellen, ob kühlt oder geladen wird.\\
-Threads für die Nebenläufigkeit finden bei den einzelnen Komponenten des Programm anklang. Da die Komponenten quasi parallel laufen müssen werden verschiedene Threads benötigt. Das Verarbeiten der Kommandos des Clients, die Simulation selbst und die Übertragung der Leistung anhand der S0-Schnittstelle laufen je in einem eigenen Thread.
+Die C++ Bibliothek \textit{Boost}\footnote{http://www.boost.org} bietet diverse Funktionalitäten für die Entwicklung an. In diesem Projekt wird \textit{Boost} dazu verwendet, um auf das Netzwerk zuzugreifen, Nebenläufigkeit zu ermöglichen und um Konfigurationsdateien einzulesen. Die Netzwerkfunktionalitäten werden für eine Client-Server Architektur verwendet, um den Simulator zu steuern. Der Client sendet Kommandos, um die Simulation zu beeinflussen. Dadurch lässt sich einstellen, ob gekühlt oder geladen wird.\\
+Threads für die Nebenläufigkeit finden bei den einzelnen Komponenten des Programm Anklang. Da die Komponenten quasi parallel laufen müssen werden verschiedene Threads benötigt. Das Verarbeiten der Kommandos des Clients, die Simulation selbst und die Übertragung der Leistung anhand der S0-Schnittstelle laufen je in einem eigenen Thread.
