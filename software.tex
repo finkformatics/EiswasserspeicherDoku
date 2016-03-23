@@ -1,28 +1,109 @@
 \chapter{Software}
 
 \section{Modell}
+\label{software_model}
 
-Wenn ein Eiswasserspeicher zum Vorkühlen von Milch eingesetzt werden soll, laufen dabei komplexe physikalische Vorgänge ab, die nur schwer mathematisch zu beschreiben sind. Deshalb war als Grundlage für den Simulator ein physikalisches Modell gegeben, das diesen Prozess näherungsweise abbildet. Dieses soll im Folgenden erläutert werden. % TODO Weiterschreiben
+Wenn ein Eiswasserspeicher zum Vorkühlen von Milch eingesetzt werden soll, laufen dabei komplexe physikalische Vorgänge ab, die nur schwer mathematisch zu beschreiben sind. Deshalb war als Grundlage für den Simulator ein physikalisches Modell gegeben, das diesen Prozess näherungsweise abbildet.
+
+\subsection{Aufbau des Eiswasserspeichers}
+Der zu betrachtende Eiswasserspeicher besteht aus einem Tank für das Wasser bzw. das Eis, einer Kältemaschine, die das Wasser kühlt und dabei Eis erzeugt, einer horizontalen Kreiselpumpe, die das Eiswasser an der Milch vorbeiführt und einer Steuereinheit, welche bestimmt, wann gekühlt oder geladen wird.
+
+\paragraph{Der Tank} des Eiswasserspeichers besitzt eine obere Schranke für den Anteil des Eises. Um diese Menge Eis herzustellen, benötigt der Eiswasserspeicher sechs Stunden \emph{Ladezeit}. Im Folgenden wird jedoch vor allem der Energiegehalt $ Q $ des Eiswasserspeichers betrachtet und auf Basis dessen die Berechnungen ausgeführt
 
 \subsection{Laden}
+Das Erzeugen von Eis durch die Kältemaschine innerhalb des Eiswasserspeichers wird im Rahmen des Projektes als \emph{Laden} bezeichnet. Die Kältemaschine soll von außen ein- und ausgeschaltet werden können.
+
+Seien $ Q_s $ die aktuelle Kühlleistung des Speichers, $ Q_{s_{max}} $ die maximale Kühlleistung des Speichers, $ m_s $ die Speicherkapazität des Eiswasserspeichers, $ w_e $ die Schmelzwärme von Eis, $ t_l $ die Regenerationszeit in Stunden und $ \Delta T $ die Dauer eines Simulationsschrittes in Minuten. Die Regeneration pro Simulationsschritt $ Q_l $ lässt sich nun durch die Formel \ref{eq:q_l} berechnen.
+
+\begin{equation}\label{eq:q_l}
+Q_l = \frac{Q_{s_{max}}}{t_l \cdot \frac{60}{\Delta T}} = \frac{m_s w_e}{t_l \cdot \frac{60}{\Delta T}}
+\end{equation}
+
+Das Ergebnis dieser Berechnung wird in jedem Simulationsschritt zur aktuellen Kühlleistung des Eiswasserspeichers addiert. Die dafür aufgewendete elektrische Arbeit wird als konstant angenommen und liegt bei 3,57 kWh.
 
 \subsection{Kühlen}
+Wenn die Kreiselpumpe angeschaltet ist, wird das Eiswasser umgewälzt und somit die Milch gekühlt. Auch dieser Prozess soll von außen gestartet und gestoppt werden können.
+
+Seien $ c_p $ die spezifische Wärmekapazität der Milch, $ m_1 $ und $ m_2 $ die Volumenströme der Vakuumpumpen, die die Milch durch den Eiswasserspeicher führen, $ T_m $ die Eingangstemperatur der Milch und $ T_w $ die Ausgangstemperatur der Milch. Dann beschreibt $ Q_w $ die Abnahme der Kühlleistung pro Simulationsschritt. Die Formel für die Berechnung von $ Q_w $ ist in Gleichung \ref{eq:q_w} zu sehen.
+
+\begin{equation}\label{eq:q_w}
+Q_w = c_p (m_1 + m_2) (T_m - T_w)
+\end{equation}
+
+Dieser Betrag wird pro Simulationsschritt von der aktuellen Kühlleistung des Speichers subtrahiert. Die dafür aufgewendete elektrische Arbeit wird als konstant angenommen und liegt bei 0,5 kWh.
 
 \section{Simulator}
 \label{software_simulator}
 
-Um das physikalische Modell wie im vorherigen Abschnitt beschrieben abzubilden, wurde im Rahmen dieses Projektes eine komplexe C++-Applikation entwickelt. Diese läuft zeitdiskret ab, ist konfigurierbar und bietet verschiedene Schnittstellen nach außen an. Sie lässt sich in verschiedene logische Einheiten unterteilen, welche in den nachfolgenden Teilabschnitten genauer betrachtet werden sollen. % TODO Weiterschreiben
+Um das physikalische Modell wie im vorherigen Abschnitt beschrieben abzubilden, wurde im Rahmen dieses Projektes eine komplexe C++-Applikation entwickelt. Diese läuft zeitdiskret ab, ist konfigurierbar und bietet verschiedene Schnittstellen nach außen an. 
 
-\subsection{Eiswasserspeicher}
+\subsection{Logische Einheiten des Simulators}
+Der Simulator lässt sich in verschiedene logische Einheiten unterteilen, welche in den nachfolgenden Teilabschnitten genauer betrachtet werden sollen. Eine übergeordnete Einheit (Klasse \emph{Simulator}) dient als Koordinator für den zeitdiskreten Ablauf.
 
-Der Eiswasserspeicher ist die zentrale Einheit im Simulator. Er setzt das komplette mathematische Modell um. % TODO Weiterschreiben
+\subsubsection{Eiswasserspeicher}
+Der Eiswasserspeicher ist die zentrale Einheit im Simulator. Er setzt das komplette physikalische Modell um und wird durch die Klasse \emph{Reservoir} repräsentiert. Diese besitzt eine Methode \colorbox{lightgrey}{\lstinline[basicstyle=\ttfamily]|load()|} zum Laden des Speichers, sowie eine Methode \colorbox{lightgrey}{\lstinline[basicstyle=\ttfamily]|cool()|} zum Kühlen. Weiterhin gibt es eine Methode \colorbox{lightgrey}{\lstinline[basicstyle=\ttfamily]|step()|} zum Ausführen eines zeitdiskreten Simulationsschrittes. Diese entscheidet anhand des aktuellen Zustands, ob die Methoden zum Laden und Kühlen ausgeführt werden sollen. Um den Zustand zu ändern, gibt es die beiden Methoden \colorbox{lightgrey}{\lstinline[basicstyle=\ttfamily]|toggleLoading()|} und \colorbox{lightgrey}{\lstinline[basicstyle=\ttfamily]|toggleCooling()|}, womit das Laden respektive das Kühlen an- und ausgeschaltet werden kann.
 
-\subsection{Steuer-Server}
-Der Simulator soll wie in Abschnitt \ref{software_simulator} erläutert lediglich den Teil des Eiswasserspeichers übernehmen. Das heißt, dass es eine Schnittstelle  % TODO Weiterschreiben
+\subsubsection{Steuer-Server}
+Der Simulator soll wie in Abschnitt \ref{software_simulator} erläutert lediglich den Teil des Eiswasserspeichers übernehmen. Das heißt, dass es eine Schnittstelle geben soll, über die das Laden und Kühlen von außen an- und ausgeschaltet werden kann. Diese Schnittstelle bietet der Steuer-Server an, der mit den Klassen \emph{ControlServer} und \emph{TcpSession} realisiert wurde. Mit ihm kann sich ein Client (siehe Abschnitt \ref{steuerclient}) verbinden und mit entsprechenden Befehlen den Zustand des Eiswasserspeichers verändern.
+
+\subsubsection{S0-Schnittstelle}
+Die S0-Schnittstelle des Simulators richtet sich nach der in Abschnitt TODO vorgestellten Definition. Sie läuft permanent und prüft in jedem Schritt, ob aktuell gekühlt bzw. geladen wird. Dementsprechend werden Impulse in regelmäßigen Abständen über den entsprechenden Pin am Raspberry PI gesendet.
+
+Ein solcher Impuls ist in idealisierter Form in Abbildung \ref{fig:s0impuls} dargestellt. Er besteht aus einer \emph{HIGH}-Phase mit Stromfluss und einer \emph{LOW}-Phase ohne Stromfluss. Zwischen den zwei Phasen muss laut Spezifikation immer eine Zeit von mindestens 30 ms gewartet werden.
+
+\begin{figure}[h]
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+width=5cm,
+height=4cm,
+x axis line style={-stealth},
+y axis line style={-stealth},
+yticklabels={HIGH},
+xtick={30, 60},
+ymax = 1.5,xmax=60,
+axis lines*=center,
+ytick={1},
+xlabel={Zeit in ms $\rightarrow$},
+xlabel near ticks,
+ylabel near ticks]
+\addplot+[thick,mark=none,const plot]
+coordinates
+{(0,1) (30,0) (60,0)};
+\end{axis}
+\end{tikzpicture}
+\label{fig:s0impuls}
+\caption{Idealisierter S0-Impuls}
+\end{center}
+\end{figure}
+
+Die Anzahl der Impulse pro Zeiteinheit werden durch eine Wartezeit $ t_{S0} $ zwischen zwei Impulsen bestimmt. Hierzu müssen die Anzahl der Impulse pro Leistungsverbrauch $ n_{S0} $ und die Dauer einer Impulsphase $ t_p $ gegeben sein. Weiterhin müssen die Zeitdauer eines Simulationsschrittes in Millisekunden $ t_d $ bekannt sein und die verbrauchte Leistung $ P $ berechnet werden. Die Berechnung von $ t_{S0} $ wird dann wie in Formel \ref{eq:sleeptime} durchgeführt.
+
+\begin{equation}\label{eq:sleeptime}
+t_{S0} = \frac{t_d}{n_{S0} P - 2 t_p}
+\end{equation}
+
+\subsection{Kompilieren des Simulators}\label{simulatorcompile}
+Um den Simulator zu kompilieren, gibt es einige Systemvoraussetzungen, die zunächst erfüllt werden müssen. Da die Applikation unter Linux (siehe Abschnitt \ref{os}) laufen soll, empfiehlt es sich, diese auch unter demselben Betriebssystem zu übersetzen. Zunächst wird ein C++-Compiler benötigt; in diesem Projekt wurde die \emph{GNU Compiler Collection} (kurz: GCC) verwendet. Diese ist unter Linux in der Regel in den Paketquellen zu finden. Alternativ kann man sie auch manuell installieren\footnote{https://gcc.gnu.org/install}. Anschließend werden noch die Programmbibliotheken \emph{Boost}\footnote{http://www.boost.org} und \emph{Wiring Pi}\footnote{http://wiringpi.com} benötigt.
+Sind alle Voraussetzungen erfüllt, lässt sich die Applikation mit dem Befehl \colorbox{lightgrey}{\lstinline[basicstyle=\ttfamily]|make|} kompilieren.
 
 \subsection{Konfiguration des Simulators}
 
-Die Konfigurationsmöglichkeiten sind in Tabelle \ref{tab:simulatorconfig} aufgelistet, dabei sind sämtliche Zahlenwerte sind als \emph{Integer} anzugeben. % TODO Weiterschreiben
+Viele der Werte, die in Abschnitt \ref{software_model} für das physikalische Modell verwendet werden, sind veränderlich. So unter anderem der Zeitschritt des Simulationsverfahren oder das Fassungsvermögen des zu simulierenden Eiswasserspeichers. Um dies zu ermöglichen, sollte die Applikation konfigurierbar sein, ohne diese stets neu kompilieren zu müssen. Um dies zu ermöglichen, werden sogenannte \emph{Initialisierungsdateien} (kurz: INI-Dateien) verwendet. Dies sind einfache Textdateien, deren Struktur aus Abschnitten, Eigenschaften und Werten besteht. % Vgl.?
+
+Ein einfaches Beispiel einer Konfigurationsdatei ist in Listing \ref{lst:ini-example} zu sehen.
+
+\lstset{basicstyle=\footnotesize\ttfamily}
+\begin{lstlisting}[frame=single, caption=INI-Datei Beispiel, label=lst:ini-example]
+	[FooBar]
+	prop = foobar
+	prop.foo = foo
+	prop.bar = bar
+	[Baz]
+	other = value
+\end{lstlisting}
+
+Die Konfigurationsmöglichkeiten des Simulators sind in Tabelle \ref{tab:simulatorconfig} aufgelistet, dabei sind sämtliche Zahlenwerte sind als \emph{Integer} anzugeben.
 
 \begin{table}[H]
 \centering
@@ -53,11 +134,11 @@ reservoir.pumps.flow & > 0 & Volumenstrom der Pumpen in l/min \\ \hline
 \label{tab:simulatorconfig}
 \end{table}
 
-\section{Steuer-Client}
-Um den im vorherigen Abschnitt vorgestellten Steuer-Server einfach und sicher bedienen zu können, wurde im Rahmen dieses Projektes der \emph{Steuer-Client} entwickelt. Dies ist eine einfache C++-Applikation, die unabhängig vom Simulator gestartet und bedient werden kann. Dabei ist es möglich, dass Simulator und Steuer-Client auf physisch getrennten Maschinen laufen, da diese über TCP/IP miteinander kommunizieren. Dies wird bereits durch den Raspberry PI und das darauf laufende Betriebssystem sichergestellt (siehe Kapitel \ref{raspi}). % TODO Weiterschreiben
+\section{Steuer-Client}\label{steuerclient}
+Um den im vorherigen Abschnitt vorgestellten Steuer-Server einfach und sicher bedienen zu können, wurde im Rahmen dieses Projektes der \emph{Steuer-Client} entwickelt. Dies ist eine einfache C++-Applikation, die unabhängig vom Simulator gestartet und bedient werden kann. Dabei ist es möglich, dass Simulator und Steuer-Client auf physisch getrennten Maschinen laufen, da diese über TCP/IP miteinander kommunizieren. Dies wird bereits durch den Raspberry PI und das darauf laufende Betriebssystem sichergestellt (siehe Kapitel \ref{raspi}).
 
 \subsection{Konfiguration des Steuer-Clients}
-Auch der Steuer-Client ist über eine mitgelieferte INI-Datei konfigurierbar. Hierzu wird ebenfalls die \emph{Boost program\_options} verwendet. % TODO Weiterschreiben
+Auch der Steuer-Client ist über eine mitgelieferte INI-Datei konfigurierbar. Hierzu wird ebenfalls die \emph{Boost program\_options} verwendet.
 Tabelle \ref{tab:clientconfig} zeigt die Konfigurationsmöglichkeiten des Steuer-Clients.
 
 \begin{table}[h]
@@ -72,3 +153,6 @@ server.secret.token & beliebig & Geheimer Schlüssel des Servers \\ \hline
 \caption{Konfiguration des Steuer-Clients}
 \label{tab:clientconfig}
 \end{table}
+
+\subsection{Kompilieren des Steuer-Clients}
+Der Steuer-Client lässt sich nahezu analog zum Simulator kompilieren (siehe Abschnitt \ref{simulatorcompile}). Einzig die \emph{Wiring Pi} Bibliothek wird nicht benötigt. Wurden alle Voraussetzungen für den Simulator bereits geschaffen, so lässt sich der Steuer-Client ebenfalls mit dem Befehl \colorbox{lightgrey}{\lstinline[basicstyle=\ttfamily]|make|} kompilieren.
