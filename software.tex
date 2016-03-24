@@ -9,10 +9,10 @@ Im Folgenden wird der Energiegehalt $ Q $ des Eiswasserspeichers betrachtet und 
 \subsection{Laden}
 Das Erzeugen von Eis durch die Kältemaschine innerhalb des Eiswasserspeichers wird im Rahmen des Projektes als \emph{Laden} bezeichnet. Die Kältemaschine soll von außen ein- und ausgeschaltet werden können.
 
-Seien $ Q_s $ der aktuelle Energiegehalt in kJ, $ Q_{s_{max}} $ der maximale Energiegehalt in kJ, $ m_s $ die Speicherkapazität des Eiswasserspeichers in kg, $ w_e $ die Schmelzwärme von Eis in kj/kg, $ t_l $ die Regenerationszeit in Stunden und $ t_d $ die Dauer eines Simulationsschrittes in Minuten. Die Regeneration pro Simulationsschritt $ Q_l $ in kJ lässt sich nun durch die Formel \ref{eq:q_l} berechnen.
+Seien $ Q_s $ der aktuelle Energiegehalt in kJ, $ Q_{s_{max}} $ der maximale Energiegehalt in kJ, $ m_s $ die Speicherkapazität des Eiswasserspeichers in kg, $ w_e $ die Schmelzwärme von Eis in kJ/kg, $ t_l $ die Regenerationszeit in Stunden und $ t_d $ die Dauer eines Simulationsschrittes in Minuten. Die Regeneration pro Simulationsschritt $ Q_l $ in kJ lässt sich nun durch die Formel \ref{eq:q_l} berechnen.
 
 \begin{equation}\label{eq:q_l}
-Q_l = \frac{Q_{s_{max}}}{t_l \cdot \frac{60}{t_d}} = \frac{m_s w_e}{t_l \cdot \frac{60}{t_d}}
+Q_l = \frac{Q_{s_{max}} t_d}{60 t_l} = \frac{m_s w_e t_d}{60 t_l}
 \end{equation}
 
 Das Ergebnis dieser Berechnung wird in jedem Simulationsschritt zum aktuellen Energiegehalt des Eiswasserspeichers addiert. Die dafür aufgewendete elektrische Arbeit wird als konstant angenommen und liegt bei 3,57 kWh \cite{kusow}.
