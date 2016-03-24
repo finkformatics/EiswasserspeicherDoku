@@ -20,10 +20,10 @@ Das Ergebnis dieser Berechnung wird in jedem Simulationsschritt zum aktuellen En
 \subsection{Kühlen}
 Wenn die Kreiselpumpe angeschaltet ist, wird das Eiswasser umgewälzt und somit die Milch gekühlt. Auch dieser Prozess soll von außen gestartet und gestoppt werden können.
 
-Seien $ c_p $ die spezifische Wärmekapazität der Milch $ \frac{kJ}{kg \cdot K} $, $ m_1 $ und $ m_2 $ die Volumenströme der Vakuumpumpen, die die Milch durch den Eiswasserspeicher führen in l/min, $ T_m $ die Eingangstemperatur und $ T_w $ die Ausgangstemperatur der Milch in Grad Celsius. Dann beschreibt $ Q_w $ die Abnahme des Energiegehaltes pro Simulationsschritt. Formel \ref{eq:q_w} zeigt die Berechnung von $ Q_w $.
+Seien $ c_p $ die spezifische Wärmekapazität der Milch $ \frac{kJ}{kg \cdot K} $, $ m_1 $ und $ m_2 $ die Volumenströme der Vakuumpumpen, die die Milch durch den Eiswasserspeicher führen, in l/min, $ T_m $ die Eingangstemperatur, $ T_w $ die Ausgangstemperatur der Milch in Grad Celsius und $ \rho_m $ deren Dichte. Dann beschreibt $ Q_w $ die Abnahme des Energiegehaltes pro Simulationsschritt. Formel \ref{eq:q_w} zeigt die Berechnung von $ Q_w $.
 
 \begin{equation}\label{eq:q_w}
-Q_w = c_p (m_1 + m_2) (T_m - T_w)
+Q_w = t_d \rho_m c_p (m_1 + m_2) (T_m - T_w)
 \end{equation}
 
 Dieser Betrag wird pro Simulationsschritt von der aktuellen Kühlleistung des Speichers subtrahiert. Die dafür aufgewendete elektrische Arbeit wird als konstant angenommen und liegt bei 0,5 kWh \cite{kusow}.
